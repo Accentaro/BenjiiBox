@@ -130,6 +130,7 @@ contextBridge.exposeInMainWorld("electron", {
   openPipWindow: (url, title) =>
     ipcRenderer.invoke("open-pip-window", { url, title }),
   closePipWindow: () => ipcRenderer.invoke("close-pip-window"),
+  getPipWebContentsId: () => ipcRenderer.invoke("get-pip-webcontents-id"),
   onPipOpened: (cb) => {
     const h = () => cb();
     ipcRenderer.on("pip-window-opened", h);

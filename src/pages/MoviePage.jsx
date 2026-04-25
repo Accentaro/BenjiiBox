@@ -108,6 +108,7 @@ export default function MoviePage({
   // pipOpen=true: main webview shows about:blank, pop-out window has the real player
   const [pipOpen, setPipOpen] = useState(false);
   const pipUrlRef = useRef(null); // URL to restore when pop-out closes
+  const pipWebContentsIdRef = useRef(null); // cached WebContents ID of the pop-out window
 
   // Derived: detect anime before any effects so effects can use it
   const isAnime = useMemo(
@@ -439,7 +440,16 @@ export default function MoviePage({
           const wv = webviewRef.current;
           if (!wv) return;
           let result;
-          if (progressViaFrames && window.electron?.queryVideoProgress) {
+          // When the pop-out window is open the main webview shows about:blank
+          // -> query the pip window's webContents directly.
+          if (
+            pipWebContentsIdRef.current != null &&
+            window.electron?.queryVideoProgress
+          ) {
+            result = await window.electron.queryVideoProgress(
+              pipWebContentsIdRef.current,
+            );
+          } else if (progressViaFrames && window.electron?.queryVideoProgress) {
             result = await window.electron.queryVideoProgress(
               wv.getWebContentsId(),
             );
@@ -559,9 +569,14 @@ export default function MoviePage({
   // ── PiP pop-out: navigate main webview away so only one stream is active ──
   useEffect(() => {
     if (!playing) return;
-    const openH = window.electron?.onPipOpened?.(() => setPipOpen(true));
+    const openH = window.electron?.onPipOpened?.(async () => {
+      setPipOpen(true);
+      pipWebContentsIdRef.current =
+        (await window.electron.getPipWebContentsId?.()) ?? null;
+    });
     const closeH = window.electron?.onPipClosed?.(() => {
       pipUrlRef.current = null;
+      pipWebContentsIdRef.current = null;
       setPipOpen(false);
     });
     return () => {

@@ -553,6 +553,11 @@ ipcMain.handle("close-pip-window", () => {
   if (pipWindow && !pipWindow.isDestroyed()) pipWindow.close();
 });
 
+ipcMain.handle("get-pip-webcontents-id", () => {
+  if (pipWindow && !pipWindow.isDestroyed()) return pipWindow.webContents.id;
+  return null;
+});
+
 // -- Popout window controls (used by popout-preload.js title bar buttons) -----
 ipcMain.handle("popout-window-minimize", () => {
   if (pipWindow && !pipWindow.isDestroyed()) pipWindow.minimize();

@@ -410,6 +410,7 @@ export default function TVPage({
   const [playerFullscreen, setPlayerFullscreen] = useState(false);
   const [pipOpen, setPipOpen] = useState(false);
   const pipUrlRef = useRef(null);
+  const pipWebContentsIdRef = useRef(null); // cached WebContents ID of the pop-out window
   const [menuPos, setMenuPos] = useState(null);
   // AniSkip
   const [skipTimings, setSkipTimings] = useState(null); // { intro?, outro? }
@@ -1152,7 +1153,16 @@ export default function TVPage({
           if (!wv) return;
 
           let result;
-          if (progressViaFrames && window.electron?.queryVideoProgress) {
+          // When the pop-out window is open the main webview shows about:blank
+          // -> query the pip window's webContents directly.
+          if (
+            pipWebContentsIdRef.current != null &&
+            window.electron?.queryVideoProgress
+          ) {
+            result = await window.electron.queryVideoProgress(
+              pipWebContentsIdRef.current,
+            );
+          } else if (progressViaFrames && window.electron?.queryVideoProgress) {
             result = await window.electron.queryVideoProgress(
               wv.getWebContentsId(),
             );
@@ -1377,9 +1387,14 @@ export default function TVPage({
   // ── PiP pop-out: navigate main webview away so only one stream is active ──
   useEffect(() => {
     if (!playing) return;
-    const openH = window.electron?.onPipOpened?.(() => setPipOpen(true));
+    const openH = window.electron?.onPipOpened?.(async () => {
+      setPipOpen(true);
+      pipWebContentsIdRef.current =
+        (await window.electron.getPipWebContentsId?.()) ?? null;
+    });
     const closeH = window.electron?.onPipClosed?.(() => {
       pipUrlRef.current = null;
+      pipWebContentsIdRef.current = null;
       setPipOpen(false);
     });
     return () => {
