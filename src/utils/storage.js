@@ -50,6 +50,7 @@ export const STORAGE_KEYS = {
   WATCHED_THRESHOLD: "watchedThreshold",
   HOME_ROW_ORDER: "homeRowOrder",
   HOME_ROW_VISIBLE: "homeRowVisible",
+  HOME_VIEW_MODE: "homeViewMode",
   AUTO_CHECK_UPDATES: "autoCheckUpdates",
   INVIDIOUS_BASE: "invidiousBase",
   // Subtitle settings

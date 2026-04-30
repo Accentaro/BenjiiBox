@@ -13,7 +13,12 @@ import { DEFAULT_INVIDIOUS_BASE } from "../components/TrailerModal";
 import { RATING_COUNTRIES } from "../utils/ageRating";
 import { WarningIcon } from "../components/Icons";
 import { checkForUpdates } from "../utils/updates";
-import { HOME_ROWS, loadHomeLayout } from "../utils/homeLayout";
+import {
+  HOME_ROWS,
+  loadHomeLayout,
+  loadHomeViewMode,
+  saveHomeViewMode,
+} from "../utils/homeLayout";
 import { collectBackupData, restoreBackupData } from "../utils/backup";
 import { formatBytes } from "../utils/storage";
 
@@ -685,6 +690,7 @@ function HomeLayoutSection() {
     const { visible: v } = loadHomeLayout();
     return v;
   });
+  const [viewMode, setViewMode] = useState(() => loadHomeViewMode());
   const [saved, setSaved] = useState(false);
   const dragItem = useRef(null);
   const dragOver = useRef(null);
@@ -711,6 +717,7 @@ function HomeLayoutSection() {
   const handleSave = () => {
     storage.set(STORAGE_KEYS.HOME_ROW_ORDER, order);
     storage.set(STORAGE_KEYS.HOME_ROW_VISIBLE, visible);
+    saveHomeViewMode(viewMode);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
   };
@@ -730,6 +737,63 @@ function HomeLayoutSection() {
       >
         Choose which rows appear on the Home page and drag to reorder them. The
         hero banner is always shown at the top.
+      </div>
+
+      {/* ── View mode selector ── */}
+      <div style={{ marginBottom: 20 }}>
+        <div
+          style={{
+            fontSize: 13,
+            fontWeight: 600,
+            color: "var(--text2)",
+            marginBottom: 8,
+            textTransform: "uppercase",
+            letterSpacing: "0.05em",
+          }}
+        >
+          Row display style
+        </div>
+        <div style={{ display: "flex", gap: 10 }}>
+          {[
+            {
+              value: "carousel",
+              label: "Carousel",
+              desc: "Scrollable spotlight with featured poster",
+            },
+            {
+              value: "list",
+              label: "⊞ Grid",
+              desc: "Compact grid of all items",
+            },
+          ].map(({ value, label, desc }) => (
+            <button
+              key={value}
+              onClick={() => setViewMode(value)}
+              style={{
+                flex: 1,
+                maxWidth: 220,
+                padding: "10px 14px",
+                borderRadius: 8,
+                border: `2px solid ${viewMode === value ? "var(--red)" : "var(--border)"}`,
+                background:
+                  viewMode === value
+                    ? "color-mix(in srgb, var(--red) 12%, var(--surface))"
+                    : "var(--surface)",
+                color: viewMode === value ? "var(--text)" : "var(--text2)",
+                cursor: "pointer",
+                textAlign: "left",
+                transition: "border-color 0.15s, background 0.15s",
+              }}
+            >
+              <div style={{ fontWeight: 600, fontSize: 14 }}>{label}</div>
+              <div
+                style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}
+              >
+                {desc}
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div

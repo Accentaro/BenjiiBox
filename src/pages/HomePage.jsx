@@ -6,7 +6,7 @@ import { imgUrl, tmdbFetch } from "../utils/api";
 import { useRatings, getRatingForItem } from "../utils/useRatings";
 import { isRestricted } from "../utils/ageRating";
 import { storage } from "../utils/storage";
-import { loadHomeLayout } from "../utils/homeLayout";
+import { loadHomeLayout, loadHomeViewMode } from "../utils/homeLayout";
 
 function getRecentHistoryItem(history) {
   if (!history || history.length === 0) return null;
@@ -42,6 +42,8 @@ export default function HomePage({
   // Load layout config (order + visibility) once on mount
   const [layout] = useState(() => loadHomeLayout());
   const { order: rowOrder, visible: rowVisible } = layout;
+
+  const [viewMode] = useState(() => loadHomeViewMode());
 
   // All items for batch ratings fetch
   const allItems = useMemo(
@@ -262,8 +264,56 @@ export default function HomePage({
           );
         }
 
+        // Render a section as a flat cards-grid (list view)
+        const renderList = (key, title, titleHighlight, items) => {
+          if (!items || items.length === 0) return null;
+          return (
+            <div key={key} className="section">
+              <div className="section-title">
+                {titleHighlight ? (
+                  <>
+                    {title}&nbsp;
+                    <span style={{ color: "var(--red)" }}>
+                      {titleHighlight}
+                    </span>
+                  </>
+                ) : (
+                  title
+                )}
+              </div>
+              <div className="cards-grid">
+                {items.map((item) => {
+                  const type = item.media_type === "tv" ? "tv" : "movie";
+                  const rk = `${type}_${item.id}`;
+                  const rd = enrichedRatingsMap[rk] || {};
+                  return (
+                    <MediaCard
+                      key={`${item.media_type}_${item.id}`}
+                      item={item}
+                      onClick={() => onSelect(item)}
+                      progress={0}
+                      watched={watched}
+                      onMarkWatched={onMarkWatched}
+                      onMarkUnwatched={onMarkUnwatched}
+                      ageRating={rd.cert}
+                      restricted={rd.restricted}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          );
+        };
+
         if (id === "similar") {
           if (!similarSource || similarItems.length === 0) return null;
+          if (viewMode === "list")
+            return renderList(
+              "similar",
+              "Similar to",
+              similarSource.title || similarSource.name,
+              similarItems,
+            );
           return (
             <TrendingCarousel
               key="similar"
@@ -278,6 +328,13 @@ export default function HomePage({
 
         if (id === "trendingMovies") {
           if (trendingMovieItems.length === 0) return null;
+          if (viewMode === "list")
+            return renderList(
+              "trendingMovies",
+              "Trending Movies",
+              null,
+              trendingMovieItems,
+            );
           return (
             <TrendingCarousel
               key="trendingMovies"
@@ -291,6 +348,13 @@ export default function HomePage({
 
         if (id === "trendingTV") {
           if (trendingTVItems.length === 0) return null;
+          if (viewMode === "list")
+            return renderList(
+              "trendingTV",
+              "Trending Series",
+              null,
+              trendingTVItems,
+            );
           return (
             <TrendingCarousel
               key="trendingTV"
@@ -304,6 +368,8 @@ export default function HomePage({
 
         if (id === "topRated") {
           if (topRatedItems.length === 0) return null;
+          if (viewMode === "list")
+            return renderList("topRated", "Top Rated", null, topRatedItems);
           return (
             <TrendingCarousel
               key="topRated"
