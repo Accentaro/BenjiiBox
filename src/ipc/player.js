@@ -198,8 +198,7 @@ function register(getMainWindow, { writeSecretMigration }) {
   // ── Auto-updater ──────────────────────────────────────────────────────────
   ipcMain.handle("detect-update-format", () => {
     if (process.platform === "win32") return "exe";
-    if (process.platform === "darwin")
-      return process.arch === "arm64" ? "dmg_arm64" : "dmg";
+    if (process.platform === "darwin") return "dmg";
     if (process.platform === "linux") {
       if (process.env.APPIMAGE) return "appimage";
       const isArch =
@@ -218,7 +217,7 @@ function register(getMainWindow, { writeSecretMigration }) {
         format === "exe" ? ".exe"
         : format === "deb" ? ".deb"
         : format === "pacman" ? ".pacman"
-        : format === "dmg" || format === "dmg_arm64" ? ".dmg"
+        : format === "dmg" ? ".dmg"
         : ".AppImage";
       const destPath = path.join(os.tmpdir(), `streambert-update${ext}`);
 
@@ -406,7 +405,7 @@ function register(getMainWindow, { writeSecretMigration }) {
         sendInstalling();
         spawn(destPath, [], { detached: true, stdio: "ignore" }).unref();
         app.exit(0);
-      } else if (format === "dmg" || format === "dmg_arm64") {
+      } else if (format === "dmg") {
         sendInstalling();
         spawn("hdiutil", ["attach", destPath], {
           detached: true,

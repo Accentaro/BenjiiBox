@@ -418,7 +418,7 @@ export default function UpdateModal({
   const { latest, current, url, changelog, assets } = updateInfo;
 
   const [phase, setPhase] = useState("idle"); // idle | downloading | installing | done | error
-  const [format, setFormat] = useState(null); // "appimage" | "deb" | "exe" | "dmg" | "dmg_arm64" | null
+  const [format, setFormat] = useState(null); // "appimage" | "deb" | "exe" | "dmg" | null
   const [progress, setProgress] = useState(0);
   const [progressLabel, setProgressLabel] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
@@ -486,8 +486,7 @@ export default function UpdateModal({
     deb: ".deb package",
     pacman: ".pacman (Arch)",
     exe: "Windows installer",
-    dmg: "macOS installer",
-    dmg_arm64: "macOS (Apple Silicon)",
+    dmg: "macOS installer (Universal)",
   }[format] || "installer";
 
   const busy = phase === "downloading" || phase === "installing";

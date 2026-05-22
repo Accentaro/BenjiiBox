@@ -63,8 +63,6 @@ export async function checkForUpdates() {
       assets.exe = asset.browser_download_url;
     else if (name.endsWith(".pacman"))
       assets.pacman = asset.browser_download_url;
-    else if (name.endsWith("arm64.dmg"))
-      assets.dmg_arm64 = asset.browser_download_url;
     else if (name.endsWith(".dmg"))
       assets.dmg = asset.browser_download_url;
   }

@@ -18,7 +18,7 @@
     "dist:arch": "cross-env ELECTRON_DIST=1 vite build && electron-builder --linux pacman --publish never",
     "dist:appimage": "cross-env ELECTRON_DIST=1 vite build && electron-builder --linux AppImage --publish never",
     "dist:win": "cross-env ELECTRON_DIST=1 vite build && electron-builder --win --publish never",
-    "dist:mac": "cross-env ELECTRON_DIST=1 vite build && electron-builder --mac --publish never"
+    "dist:mac": "cross-env ELECTRON_DIST=1 vite build && electron-builder --mac --universal --publish never"
   },
   "dependencies": {
     "react": "^18.2.0",
@@ -100,8 +100,7 @@
         {
           "target": "dmg",
           "arch": [
-            "x64",
-            "arm64"
+            "universal"
           ]
         }
       ],
