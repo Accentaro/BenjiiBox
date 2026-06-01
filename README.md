@@ -109,6 +109,15 @@ npm run dist:appimage
 > - **libcrypt.so.1 error:** `sudo pacman -S libxcrypt-compat`
 > - **http-parser dependency error:** `yay -S http-parser` (from AUR)
 
+## License
+This project is open-source software licensed under the GNU General Public License v3.0 [(GPL-3.0)](LICENSE).
+
+Forks may be created but they MUST stay open-sourced.
+
+## Contributing
+Everyone is welcome to contribute to this project.
+Before contributing please make sure to read the [Contributing Guidelines](CONTRIBUTING.md) and act accordingly.
+
 ## Legal Disclaimer
 
 **IMPORTANT: This application is for educational and personal use only.**
