@@ -140,15 +140,14 @@ export const PLAYER_SOURCES = [
       `https://vsembed.su/embed/tv/${id}/${season}/${ep}`,
   },
   {
-    id: "2embed",
-    label: "2Embed",
+    id: "vidking",
+    label: "Vidking",
     tag: null,
-    note: "unstable",
+    note: null,
     supportsProgress: true,
-    progressViaFrames: true,
-    movieUrl: (id) => `https://www.2embed.online/embed/movie/${id}`,
+    movieUrl: (id) => `https://www.vidking.net/embed/movie/${id}`,
     tvUrl: (id, season, ep) =>
-      `https://www.2embed.online/embed/tv/${id}/${season}/${ep}`,
+      `https://www.vidking.net/embed/tv/${id}/${season}/${ep}`,
   },
   {
     id: "allmanga",
@@ -178,7 +177,7 @@ export const sourceIsAsync = (sourceId) =>
   PLAYER_SOURCES.find((s) => s.id === sourceId)?.async ?? false;
 
 // Sources that require a transparent webRequest intercept to load properly
-export const NEEDS_INTERCEPT = ["vidsrc", "2embed"];
+export const NEEDS_INTERCEPT = ["vidsrc"];
 
 // ── AniList API (anime metadata) ──────────────────────────────────────────────
 const ANILIST_API = "https://graphql.anilist.co";
@@ -390,7 +389,7 @@ export const isAnimeContent = (item, details) => {
 
 // Default sources
 export const ANIME_DEFAULT_SOURCE = "allmanga";
-export const NON_ANIME_DEFAULT_SOURCE = "vidsrc";
+export const NON_ANIME_DEFAULT_SOURCE = "vidking";
 
 // ── Episode Group fetch (localStorage + in-memory cache, 7-day TTL) ─────────
 // Episode groups almost never change -> cache aggressively across sessions.
