@@ -135,9 +135,9 @@ export const PLAYER_SOURCES = [
     note: null,
     supportsProgress: true,
     progressViaFrames: true, // video is in a nested iframe, needs main-process frame query
-    movieUrl: (id) => `https://vidsrc.to/embed/movie/${id}`,
+    movieUrl: (id) => `https://vsembed.su/embed/movie/${id}`,
     tvUrl: (id, season, ep) =>
-      `https://vidsrc.to/embed/tv/${id}/${season}/${ep}`,
+      `https://vsembed.su/embed/tv/${id}/${season}/${ep}`,
   },
   {
     id: "2embed",
