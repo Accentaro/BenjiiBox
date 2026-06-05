@@ -3744,11 +3744,24 @@ export default function SettingsPage({
                   }}
                 />
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 500, color: "var(--text)" }}>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      fontWeight: 500,
+                      color: "var(--text)",
+                    }}
+                  >
                     Enable Autoplay Next
                   </div>
-                  <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 2 }}>
-                    Automatically play the next episode when the current one ends.
+                  <div
+                    style={{
+                      fontSize: 12,
+                      color: "var(--text3)",
+                      marginTop: 2,
+                    }}
+                  >
+                    Automatically play the next episode when the current one
+                    ends.
                   </div>
                 </div>
               </div>
@@ -3756,14 +3769,36 @@ export default function SettingsPage({
               {autoplayNextEnabled && (
                 <>
                   {/* Duration input */}
-                  <div style={{ display: "flex", flexDirection: "column", gap: 8, marginTop: 8 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text2)" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                      marginTop: 8,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: "var(--text2)",
+                      }}
+                    >
                       Countdown Duration
                     </div>
-                    <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 4 }}>
-                      Number of seconds to display the countdown. Set to 0 to only show the buttons and not autoplay automatically.
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: "var(--text3)",
+                        marginBottom: 4,
+                      }}
+                    >
+                      Number of seconds to display the countdown. Set to 0 to
+                      only show the buttons and not autoplay automatically.
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 12 }}
+                    >
                       <input
                         type="number"
                         min={0}
@@ -3771,9 +3806,17 @@ export default function SettingsPage({
                         className="apikey-input"
                         style={{ width: 90, marginBottom: 0 }}
                         value={autoplayNextDuration}
-                        onChange={(e) => setAutoplayNextDuration(e.target.value)}
+                        onChange={(e) =>
+                          setAutoplayNextDuration(e.target.value)
+                        }
                         onBlur={() => {
-                          const num = Math.max(0, Math.min(60, parseInt(autoplayNextDuration, 10) || 0));
+                          const num = Math.max(
+                            0,
+                            Math.min(
+                              60,
+                              parseInt(autoplayNextDuration, 10) || 0,
+                            ),
+                          );
                           setAutoplayNextDuration(num);
                           storage.set(STORAGE_KEYS.AUTOPLAY_NEXT_DURATION, num);
                           flash();
@@ -3787,11 +3830,25 @@ export default function SettingsPage({
 
                   {/* Overlay Layout selection */}
                   <div style={{ marginTop: 16 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: "var(--text2)", marginBottom: 8 }}>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: "var(--text2)",
+                        marginBottom: 8,
+                      }}
+                    >
                       Overlay Position
                     </div>
-                    <div style={{ fontSize: 12, color: "var(--text3)", marginBottom: 12 }}>
-                      Choose which side of the player the next episode thumbnail and details are shown.
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: "var(--text3)",
+                        marginBottom: 12,
+                      }}
+                    >
+                      Choose which side of the player the next episode thumbnail
+                      and details are shown.
                     </div>
                     <SettingsSelect
                       value={autoplayNextLayout}

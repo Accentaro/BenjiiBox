@@ -1336,7 +1336,10 @@ export default function TVPage({
             }
 
             // Autoplay trigger
-            if (remaining <= watchedThreshold && !localCountdownStartedRef.current) {
+            if (
+              remaining <= watchedThreshold &&
+              !localCountdownStartedRef.current
+            ) {
               localCountdownStartedRef.current = true;
               setCountdownStartedRef.current?.(true);
               triggerAutoplayRef.current?.();
@@ -1428,7 +1431,9 @@ export default function TVPage({
 
   const nextEp = useMemo(() => {
     if (!selectedEp || !currentSeasonEpisodes) return null;
-    const idx = currentSeasonEpisodes.findIndex(e => e.episode_number === selectedEp.episode_number);
+    const idx = currentSeasonEpisodes.findIndex(
+      (e) => e.episode_number === selectedEp.episode_number,
+    );
     if (idx >= 0 && idx < currentSeasonEpisodes.length - 1) {
       return currentSeasonEpisodes[idx + 1];
     }
@@ -1775,7 +1780,10 @@ export default function TVPage({
                       inset: 0,
                       zIndex: 30,
                       display: "flex",
-                      justifyContent: autoplayNextLayout === "left" ? "flex-start" : "flex-end",
+                      justifyContent:
+                        autoplayNextLayout === "left"
+                          ? "flex-start"
+                          : "flex-end",
                       background: "rgba(0,0,0,0.88)",
                       borderRadius: "inherit",
                       backdropFilter: "blur(6px)",
@@ -1788,9 +1796,10 @@ export default function TVPage({
                         minWidth: "320px",
                         maxWidth: "480px",
                         height: "100%",
-                        background: autoplayNextLayout === "left"
-                          ? "linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0) 100%)"
-                          : "linear-gradient(270deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0) 100%)",
+                        background:
+                          autoplayNextLayout === "left"
+                            ? "linear-gradient(90deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0) 100%)"
+                            : "linear-gradient(270deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.85) 60%, rgba(0,0,0,0) 100%)",
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
@@ -1832,7 +1841,11 @@ export default function TVPage({
                           <img
                             src={imgUrl(nextEp.still_path, "w300")}
                             alt={nextEp?.name}
-                            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
                           />
                         ) : (
                           <span
@@ -1849,8 +1862,16 @@ export default function TVPage({
                       </div>
 
                       {/* Episode Meta */}
-                      <div style={{ fontSize: "13px", fontWeight: "600", color: "var(--text2)", marginBottom: "4px" }}>
-                        Season {selectedSeason} · Episode {nextEp?.episode_number}
+                      <div
+                        style={{
+                          fontSize: "13px",
+                          fontWeight: "600",
+                          color: "var(--text2)",
+                          marginBottom: "4px",
+                        }}
+                      >
+                        Season {selectedSeason} · Episode{" "}
+                        {nextEp?.episode_number}
                       </div>
                       <div
                         style={{
@@ -1867,15 +1888,31 @@ export default function TVPage({
 
                       {/* Countdown */}
                       {autoplayCountdown > 0 ? (
-                        <div style={{ fontSize: "14px", color: "var(--text3)", marginBottom: "20px" }}>
-                          Starting in <span style={{ color: "white", fontWeight: "600" }}>{autoplayCountdown}</span>s...
+                        <div
+                          style={{
+                            fontSize: "14px",
+                            color: "var(--text3)",
+                            marginBottom: "20px",
+                          }}
+                        >
+                          Starting in{" "}
+                          <span style={{ color: "white", fontWeight: "600" }}>
+                            {autoplayCountdown}
+                          </span>
+                          s...
                         </div>
                       ) : (
                         <div style={{ height: "20px", marginBottom: "20px" }} />
                       )}
 
                       {/* Buttons */}
-                      <div style={{ display: "flex", gap: "12px", marginTop: "4px" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          gap: "12px",
+                          marginTop: "4px",
+                        }}
+                      >
                         <button
                           className="btn btn-primary"
                           style={{
