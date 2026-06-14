@@ -116,7 +116,7 @@ export const tmdbFetch = async (path, apiKey) => {
 };
 
 // Documentation:
-// https://www.videasy.net/docs
+// https://www.videasy.to/docs
 // https://vsembed.su/api/
 // https://www.vidking.net/#documentation
 
@@ -134,9 +134,9 @@ export const PLAYER_SOURCES = [
     params: {
       overlay: "true",
     },
-    movieUrl: (id) => `https://player.videasy.net/movie/${id}`,
+    movieUrl: (id) => `https://player.videasy.to/movie/${id}`,
     tvUrl: (id, season, ep) =>
-      `https://player.videasy.net/tv/${id}/${season}/${ep}`,
+      `https://player.videasy.to/tv/${id}/${season}/${ep}`,
   },
   {
     id: "vidsrc",
