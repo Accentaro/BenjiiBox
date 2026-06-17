@@ -1,17 +1,15 @@
-[![Downloads@latest](https://img.shields.io/github/downloads/truelockmc/streambert/latest/total?style=for-the-badge)](https://github.com/truelockmc/streambert/releases/latest/)
-[![Release Version Badge](https://img.shields.io/github/v/release/truelockmc/streambert?style=for-the-badge)](https://github.com/truelockmc/streambert/releases)
-[![Issues Badge](https://img.shields.io/github/issues/truelockmc/streambert?style=for-the-badge)](https://github.com/truelockmc/streambert/issues)
-[![Closed Issues Badge](https://img.shields.io/github/issues-closed/truelockmc/streambert?color=%238256d0&style=for-the-badge)](https://github.com/truelockmc/streambert/issues?q=is%3Aissue+is%3Aclosed)<br>
+[![Downloads@latest](https://img.shields.io/github/downloads/Accentaro/BenjiiBox/latest/total?style=for-the-badge)](https://github.com/Accentaro/BenjiiBox/releases/latest/)
+[![Release Version Badge](https://img.shields.io/github/v/release/Accentaro/BenjiiBox?style=for-the-badge)](https://github.com/Accentaro/BenjiiBox/releases)
+[![Issues Badge](https://img.shields.io/github/issues/Accentaro/BenjiiBox?style=for-the-badge)](https://github.com/Accentaro/BenjiiBox/issues)
+[![Closed Issues Badge](https://img.shields.io/github/issues-closed/Accentaro/BenjiiBox?color=%238256d0&style=for-the-badge)](https://github.com/Accentaro/BenjiiBox/issues?q=is%3Aissue+is%3Aclosed)<br>
 
-[![GitHub](https://img.shields.io/badge/GitHub-truelockmc%2Fstreambert-181717?style=for-the-badge&logo=github)](https://github.com/truelockmc/streambert)
-[![Codeberg](https://img.shields.io/badge/Codeberg-truelockmc%2Fstreambert-2185D0?style=for-the-badge&logo=codeberg)](https://codeberg.org/truelockmc/streambert)
-[![AUR Version](https://img.shields.io/aur/version/streambert-bin?style=for-the-badge&logo=archlinux)](https://aur.archlinux.org/packages/streambert-bin)
-# Streambert
+[![GitHub](https://img.shields.io/badge/GitHub-Accentaro%2FBenjiiBox-181717?style=for-the-badge&logo=github)](https://github.com/Accentaro/BenjiiBox)
+# BenjiiBox
 A cross-platform Electron Desktop App to stream and download any Movie, TV Series or Anime in the World. Zero Ads and Tracking <br></br>
 ![Logo](public/logo.svg)
-[Installation](https://github.com/truelockmc/streambert?tab=readme-ov-file#requirements)
+[Installation](https://github.com/Accentaro/BenjiiBox?tab=readme-ov-file#requirements)
 
-## Why Streambert?
+## Why BenjiiBox?
 - 🎦 **Streaming:** Stream any Movie, Anime or TV Series from around the World.
 - 📥 **Downloading:** Download anything you want to watch.
 - 📃 **Subtitles:** Download and manage Subtitles.
@@ -31,7 +29,7 @@ A cross-platform Electron Desktop App to stream and download any Movie, TV Serie
 ![Download Subtitles](screenshots/subs.png)
 ![Download Everything](screenshots/download.png)
 ---
-[![Stargazers](https://reporoster.com/stars/dark/truelockmc/streambert)](https://github.com/truelockmc/streambert/stargazers)
+[![Stargazers](https://reporoster.com/stars/dark/Accentaro/BenjiiBox)](https://github.com/Accentaro/BenjiiBox/stargazers)
 ---
 ## Streaming
 The Application mainly gets Video Streams from VidSrc (you can also Stream from videasy.net and 2Embed). <br></br>
@@ -52,7 +50,7 @@ Media Files for Animes are scraped from AllManga.to (i stole this mechanic from 
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) (>=22.12.0) installed (only if you aren't using [prebuilt Binaries](https://github.com/truelockmc/streambert/releases/latest))
+- [Node.js](https://nodejs.org/) (>=22.12.0) installed (only if you aren't using [prebuilt Binaries](https://github.com/Accentaro/BenjiiBox/releases/latest))
 - A free TMDB API Read Access Token ([Guide on how to get one](tmdb-tutorial.md))
 - For downloading, [this Program](https://github.com/truelockmc/vid-dl-cli-only/releases/latest) somewhere on your PC and [ffmpeg](https://ffmpeg.org/download.html) installed
 
@@ -63,24 +61,24 @@ It's saved locally, you only need to do this once.
 
 ### Linux, Manual (.deb / .AppImage / .pacman)
 
-Download the latest `.deb` `.pacman` or `.AppImage` from the [Releases](https://github.com/truelockmc/streambert/releases/latest) page.
+Download the latest `.deb` `.pacman` or `.AppImage` from the [Releases](https://github.com/Accentaro/BenjiiBox/releases/latest) page.
 ```bash
 # .deb
-sudo dpkg -i streambert_*.deb
+sudo dpkg -i ./*.deb
 
 # Arch Linux (.pacman)
-sudo pacman -U streambert-*.pacman
+sudo pacman -U ./*.pacman
 
 # .AppImage (you can also do it with Gearlever)
-chmod +x Streambert-x64.AppImage && ./Streambert-x64.AppImage
+chmod +x BenjiiBox*.AppImage && ./BenjiiBox*.AppImage
 ```
 
 ### Windows
 
-Download the latest `Streambert Setup *.exe` from the [Releases](https://github.com/truelockmc/streambert/releases/latest) page and run it.
+Download the latest `BenjiiBox Setup *.exe` from the [Releases](https://github.com/Accentaro/BenjiiBox/releases/latest) page and run it.
 
 ### macOS
-Download the latest `Streambert-*-universal.dmg` from the [Releases](https://github.com/truelockmc/streambert/releases/latest) page, open it and drag Streambert to your Applications folder.
+Download the latest `BenjiiBox-*-universal.dmg` from the [Releases](https://github.com/Accentaro/BenjiiBox/releases/latest) page, open it and drag BenjiiBox to your Applications folder.
 
 ---
 
@@ -141,7 +139,7 @@ Before contributing please make sure to read the [Contributing Guidelines](CONTR
 
 **IMPORTANT: This application is for educational and personal use only.**
 
-- Streambert does not host, store, or distribute any copyrighted content
+- BenjiiBox does not host, store, or distribute any copyrighted content
 - All content is sourced from third-party providers and websites
 - Users are solely responsible for ensuring they have legal rights to access any content
 - The developer does not endorse or encourage copyright infringement
@@ -158,7 +156,7 @@ This application is provided "as is" for educational purposes. The developer:
 - Does not control third-party content providers
 - Encourages users to support content creators through legal means
 
-[![RepoStars](https://repostars.dev/api/embed?repo=truelockmc%2Fstreambert&theme=dark)](https://repostars.dev/?repos=truelockmc%2Fstreambert&theme=dark)
+[![RepoStars](https://repostars.dev/api/embed?repo=Accentaro%2FBenjiiBox&theme=dark)](https://repostars.dev/?repos=Accentaro%2FBenjiiBox&theme=dark)
 
 <details>
     <summary>Project Structure</summary>
