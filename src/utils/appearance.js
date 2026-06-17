@@ -4,6 +4,22 @@
 
 export const ACCENT_PRESETS = [
   {
+    id: "copper",
+    label: "Copper",
+    color: "#b07028",
+    color2: "#d09040",
+    dim: "rgb(176 112 40 / 15%)",
+    glow: "0 0 28px rgb(176 112 40 / 28%)",
+  },
+  {
+    id: "calm",
+    label: "Calm",
+    color: "#6f9a8d",
+    color2: "#85b3a6",
+    dim: "rgba(111,154,141,0.15)",
+    glow: "0 0 24px rgba(111,154,141,0.25)",
+  },
+  {
     id: "red",
     label: "Red",
     color: "#e50914",
@@ -51,9 +67,46 @@ export const ACCENT_PRESETS = [
     dim: "rgba(219,39,119,0.15)",
     glow: "0 0 30px rgba(219,39,119,0.3)",
   },
+  {
+    id: "custom",
+    label: "Custom",
+    color: "#ffffff",
+    color2: "#ffffff",
+    dim: "rgba(255,255,255,0.15)",
+    glow: "0 0 30px rgba(255,255,255,0.3)",
+  },
 ];
 
-export function applyAccentColor(presetId) {
+export const CUSTOM_ACCENT_KEY = "customAccentHex";
+
+function hexToRgb(hex) {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return { r, g, b };
+}
+
+function lightenHex(hex, amount = 20) {
+  const { r, g, b } = hexToRgb(hex);
+  const clamp = (v) => Math.min(255, v + amount);
+  return `#${[clamp(r), clamp(g), clamp(b)].map((v) => v.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function hexToRgbDim(hex, alpha) {
+  const { r, g, b } = hexToRgb(hex);
+  return `rgb(${r} ${g} ${b} / ${Math.round(alpha * 100)}%)`;
+}
+
+export function applyAccentColor(presetId, customHex) {
+  if (presetId === "custom" && customHex) {
+    const root = document.documentElement;
+    root.style.setProperty("--red", customHex);
+    root.style.setProperty("--red2", lightenHex(customHex, 20));
+    root.style.setProperty("--red-dim", hexToRgbDim(customHex, 0.15));
+    root.style.setProperty("--red-glow", `0 0 30px ${hexToRgbDim(customHex, 0.3)}`);
+    return;
+  }
   const preset =
     ACCENT_PRESETS.find((p) => p.id === presetId) ?? ACCENT_PRESETS[0];
   const root = document.documentElement;
@@ -73,16 +126,16 @@ export const THEME_PRESETS = [
   {
     id: "dark",
     label: "Dark",
-    description: "Default dark theme",
+    description: "Industrial dark theme",
     vars: {
-      "--bg": "#0a0a0a",
-      "--surface": "#111111",
-      "--surface2": "#1a1a1a",
-      "--surface3": "#222222",
-      "--border": "#2a2a2a",
-      "--text": "#f0f0f0",
-      "--text2": "#c0c0c0",
-      "--text3": "#909090",
+      "--bg": "#0f0f11",
+      "--surface": "#17171a",
+      "--surface2": "#1e1e22",
+      "--surface3": "#262629",
+      "--border": "#333338",
+      "--text": "#ede9e3",
+      "--text2": "#a09890",
+      "--text3": "#66605a",
     },
   },
   {

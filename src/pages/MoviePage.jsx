@@ -44,6 +44,7 @@ import TrailerModal from "../components/TrailerModal";
 import BlockedStatsModal from "../components/BlockedStatsModal";
 import { useBlockedStats } from "../utils/useBlockedStats";
 import MediaCard from "../components/MediaCard";
+import DetailExtras from "../components/DetailExtras";
 import {
   storage,
   STORAGE_KEYS,
@@ -76,6 +77,7 @@ export default function MoviePage({
   downloads,
   onGoToDownloads,
   onSelect,
+  onSelectPerson,
 }) {
   const [details, setDetails] = useState(null);
   const [playing, setPlaying] = useState(false);
@@ -121,6 +123,8 @@ export default function MoviePage({
   // Webview loading overlay
   const [webviewLoading, setWebviewLoading] = useState(false);
   const [playerFullscreen, setPlayerFullscreen] = useState(false);
+  const [playerInfoVisible, setPlayerInfoVisible] = useState(true);
+  const playerInfoTimerRef = useRef(null);
   // pipOpen=true: main webview shows about:blank, pop-out window has the real player
   const [pipOpen, setPipOpen] = useState(false);
   const pipUrlRef = useRef(null); // URL to restore when pop-out closes
@@ -600,8 +604,15 @@ export default function MoviePage({
     setM3u8Url(null);
     setInterceptedSubs([]);
     setPlaying(true);
+    setPlayerInfoVisible(true);
     onHistory({ ...d, media_type: "movie" });
   }, [d, onHistory]);
+
+  const handlePlayerMouseMove = useCallback(() => {
+    setPlayerInfoVisible(true);
+    clearTimeout(playerInfoTimerRef.current);
+    playerInfoTimerRef.current = setTimeout(() => setPlayerInfoVisible(false), 3000);
+  }, []);
 
   // Intercept fullscreen requests from embedded players (vidsrc / 2embed use
   // the native Fullscreen API which would otherwise fullscreen the entire app).
@@ -852,9 +863,28 @@ export default function MoviePage({
       </div>
 
       {playing && !restricted && !isUnreleased && (
-        <div className="section">
+        <div
+          className="player-page-overlay"
+          onMouseMove={handlePlayerMouseMove}
+          onMouseEnter={() => setPlayerInfoVisible(true)}
+        >
           <div
-            className={`player-wrap${playerFullscreen ? " player-wrap--fullscreen" : ""}`}
+            className={`player-page-infobar${playerInfoVisible ? "" : " player-page-infobar--hidden"}`}
+          >
+            <button
+              className="player-page-close"
+              onClick={() => setPlaying(false)}
+              title="Close player"
+            >
+              &#x2715;
+            </button>
+            <div className="player-page-title">
+              {title}
+              {year && <span className="player-page-year">{year}</span>}
+            </div>
+          </div>
+          <div
+            className={`player-wrap player-wrap--page${playerFullscreen ? " player-wrap--fullscreen" : ""}`}
             ref={playerWrapRef}
           >
             {/* Universal source-loading overlay, shown instantly on every source/item switch */}
@@ -1161,35 +1191,37 @@ export default function MoviePage({
             </button>
           </div>
 
-          {displayPct > 0 && (
-            <div className="progress-bar-row">
-              <div className="progress-bar-outer">
-                <div
-                  className="progress-bar-fill"
-                  style={{ width: `${Math.min(displayPct, 100)}%` }}
-                />
+          <div
+            className={`player-page-bottombar${playerInfoVisible ? "" : " player-page-bottombar--hidden"}`}
+          >
+            {displayPct > 0 && (
+              <div className="progress-bar-row" style={{ margin: 0 }}>
+                <div className="progress-bar-outer">
+                  <div
+                    className="progress-bar-fill"
+                    style={{ width: `${Math.min(displayPct, 100)}%` }}
+                  />
+                </div>
+                <span style={{ fontSize: 12, color: "var(--text3)" }}>
+                  {progressLabel}
+                </span>
               </div>
-              <span style={{ fontSize: 12, color: "var(--text3)" }}>
-                {progressLabel}
+            )}
+            <div className="progress-mark-row">
+              <span style={{ fontSize: 12, color: "var(--text3)", marginRight: 4 }}>
+                Mark:
               </span>
+              {[25, 50, 75, 100].map((p) => (
+                <button
+                  key={p}
+                  className="btn btn-ghost"
+                  style={{ padding: "4px 10px", fontSize: 12 }}
+                  onClick={() => saveProgress(progressKey, p)}
+                >
+                  {p}%
+                </button>
+              ))}
             </div>
-          )}
-          <div className="progress-mark-row">
-            <span
-              style={{ fontSize: 12, color: "var(--text3)", marginRight: 4 }}
-            >
-              Mark progress:
-            </span>
-            {[25, 50, 75, 100].map((p) => (
-              <button
-                key={p}
-                className="btn btn-ghost"
-                style={{ padding: "5px 14px", fontSize: 12 }}
-                onClick={() => saveProgress(progressKey, p)}
-              >
-                {p}%
-              </button>
-            ))}
           </div>
         </div>
       )}
@@ -1218,6 +1250,14 @@ export default function MoviePage({
           </div>
         </div>
       )}
+
+      <DetailExtras
+        mediaType="movie"
+        id={item.id}
+        apiKey={apiKey}
+        onSelect={onSelect}
+        onSelectPerson={onSelectPerson}
+      />
 
       {showTrailer && trailerKey && (
         <TrailerModal

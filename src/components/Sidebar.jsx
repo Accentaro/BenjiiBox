@@ -4,6 +4,7 @@ import { useSeasonalEvent } from "../components/seasonalEvents.jsx";
 import {
   StreambertLogo,
   HomeIcon,
+  CompassIcon,
   SearchIcon,
   HistoryIcon,
   FilmIcon,
@@ -105,7 +106,7 @@ export default function Sidebar({
       <div
         className="sidebar-logo"
         onClick={() => onNavigate("home")}
-        title="Streambert"
+        title="BenjiiBox"
         style={{ position: "relative" }}
       >
         <StreambertLogo />
@@ -116,12 +117,18 @@ export default function Sidebar({
         <SideBtn onClick={onBack} icon={<BackIcon />} label="Back (Ctrl+Z)" />
       )}
 
-      <SideBtn onClick={onSearch} icon={<SearchIcon />} label="Search  (⌘F)" />
       <SideBtn
         active={page === "home"}
         onClick={() => onNavigate("home")}
         icon={<HomeIcon />}
         label="Home"
+      />
+      <SideBtn onClick={onSearch} icon={<SearchIcon />} label="Search  (⌘F)" />
+      <SideBtn
+        active={page === "browse"}
+        onClick={() => onNavigate("browse")}
+        icon={<CompassIcon />}
+        label="Browse"
       />
       <SideBtn
         active={page === "history"}
