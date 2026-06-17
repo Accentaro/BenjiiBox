@@ -12,6 +12,14 @@ const {
 } = require("electron");
 const path = require("path");
 
+// -- Preserve user data across the BenjiiBox rebrand --------------------------
+// productName changed from "Streambert" to "BenjiiBox", which would otherwise
+// move Electron's userData dir (localStorage, settings, keychain) to a new
+// folder. Pin it to the legacy location so existing user data keeps working.
+try {
+  app.setPath("userData", path.join(app.getPath("appData"), "Streambert"));
+} catch {}
+
 // -- RAM / performance flags ---------------------------------------------------
 app.commandLine.appendSwitch(
   "js-flags",
@@ -212,7 +220,7 @@ function createWindow() {
     height: 900,
     minWidth: 900,
     minHeight: 600,
-    backgroundColor: "#0a0a0a",
+    backgroundColor: "#14151a",
     icon:
       process.platform === "linux"
         ? path.join(__dirname, "public/sized/256x256.png")

@@ -1,7 +1,7 @@
 export const StreambertLogo = ({ style }) => (
   <img
     src="./logo.svg"
-    alt="Streambert"
+    alt="BenjiiBox"
     width="44"
     height="44"
     style={{ width: "100%", height: "100%", display: "block", ...style }}
@@ -58,6 +58,25 @@ export const TVIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <rect x="2" y="7" width="20" height="15" rx="2" ry="2" />
     <polyline points="17 2 12 7 7 2" />
+  </svg>
+);
+export const CompassIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="12" cy="12" r="10" />
+    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+  </svg>
+);
+export const PersonIcon = ({ size = 24 }) => (
+  <svg
+    viewBox="0 0 24 24"
+    width={size}
+    height={size}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+  >
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
   </svg>
 );
 export const HomeIcon = () => (

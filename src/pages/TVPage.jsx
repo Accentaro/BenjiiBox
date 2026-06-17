@@ -48,6 +48,7 @@ import {
 } from "../components/Icons";
 import DownloadModal from "../components/DownloadModal";
 import TrailerModal from "../components/TrailerModal";
+import DetailExtras from "../components/DetailExtras";
 import BlockedStatsModal from "../components/BlockedStatsModal";
 import { useBlockedStats } from "../utils/useBlockedStats";
 import {
@@ -372,6 +373,8 @@ export default function TVPage({
   onMarkUnwatched,
   downloads,
   onGoToDownloads,
+  onSelect,
+  onSelectPerson,
 }) {
   const [details, setDetails] = useState(null);
   const [seasonData, setSeasonData] = useState(null);
@@ -424,6 +427,8 @@ export default function TVPage({
   // Webview loading overlay
   const [webviewLoading, setWebviewLoading] = useState(false);
   const [playerFullscreen, setPlayerFullscreen] = useState(false);
+  const [playerInfoVisible, setPlayerInfoVisible] = useState(true);
+  const playerInfoTimerRef = useRef(null);
   const [pipOpen, setPipOpen] = useState(false);
   const pipUrlRef = useRef(null);
   const pipWebContentsIdRef = useRef(null); // cached WebContents ID of the pop-out window
@@ -1448,6 +1453,7 @@ export default function TVPage({
       setResolveError(null);
       setSelectedEp(ep);
       setPlaying(true);
+      setPlayerInfoVisible(true);
       onHistory({
         ...d,
         media_type: "tv",
@@ -1459,6 +1465,12 @@ export default function TVPage({
     },
     [d, selectedSeason, onHistory],
   );
+
+  const handlePlayerMouseMove = useCallback(() => {
+    setPlayerInfoVisible(true);
+    clearTimeout(playerInfoTimerRef.current);
+    playerInfoTimerRef.current = setTimeout(() => setPlayerInfoVisible(false), 3000);
+  }, []);
 
   const nextEp = useMemo(() => {
     if (!selectedEp || !currentSeasonEpisodes) return null;
@@ -1670,41 +1682,31 @@ export default function TVPage({
           </div>
 
           {playing && selectedEp && (
-            <div className="section">
+            <div
+              className="player-page-overlay"
+              onMouseMove={handlePlayerMouseMove}
+              onMouseEnter={() => setPlayerInfoVisible(true)}
+            >
               <div
-                style={{
-                  marginBottom: 12,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 12,
-                }}
+                className={`player-page-infobar${playerInfoVisible ? "" : " player-page-infobar--hidden"}`}
               >
-                <span className="tag tag-red">
-                  Season {selectedSeason} · E{selectedEp.episode_number}
-                </span>
-                <span style={{ fontSize: 14, fontWeight: 500 }}>
-                  {selectedEp.name}
-                </span>
-                {currentEpWatched ? (
-                  <button
-                    className="btn btn-ghost watched-btn"
-                    style={{ marginLeft: "auto" }}
-                    onClick={() => onMarkUnwatched?.(currentProgressKey)}
-                  >
-                    <WatchedIcon size={14} /> Watched
-                  </button>
-                ) : (
-                  <button
-                    className="btn btn-ghost"
-                    style={{ marginLeft: "auto" }}
-                    onClick={() => onMarkWatched?.(currentProgressKey)}
-                  >
-                    ✓ Mark Watched
-                  </button>
-                )}
+                <button
+                  className="player-page-close"
+                  onClick={() => setPlaying(false)}
+                  title="Close player"
+                >
+                  &#x2715;
+                </button>
+                <div className="player-page-title">
+                  {title}
+                  <span className="player-page-year">
+                    S{selectedSeason} · E{selectedEp.episode_number}
+                    {selectedEp.name ? ` · ${selectedEp.name}` : ""}
+                  </span>
+                </div>
               </div>
               <div
-                className={`player-wrap${playerFullscreen ? " player-wrap--fullscreen" : ""}`}
+                className={`player-wrap player-wrap--page${playerFullscreen ? " player-wrap--fullscreen" : ""}`}
                 ref={playerWrapRef}
               >
                 {/* Universal source-loading overlay, shown instantly on every source/episode switch */}
@@ -2254,83 +2256,95 @@ export default function TVPage({
                 )}
               </div>
 
-              {currentProgressKey &&
-                (() => {
-                  const epPct = progress[currentProgressKey] || 0;
-                  const dur = durationRef.current;
-                  const hasMarkers =
-                    dur > 0 && (skipTimings?.intro || skipTimings?.outro);
-                  return epPct > 0 || hasMarkers ? (
-                    <div className="progress-bar-row">
-                      <div
-                        className="progress-bar-outer"
-                        style={{ position: "relative" }}
-                      >
+              <div
+                className={`player-page-bottombar${playerInfoVisible ? "" : " player-page-bottombar--hidden"}`}
+              >
+                {currentProgressKey &&
+                  (() => {
+                    const epPct = progress[currentProgressKey] || 0;
+                    const dur = durationRef.current;
+                    const hasMarkers =
+                      dur > 0 && (skipTimings?.intro || skipTimings?.outro);
+                    return epPct > 0 || hasMarkers ? (
+                      <div className="progress-bar-row" style={{ margin: 0 }}>
                         <div
-                          className="progress-bar-fill"
-                          style={{ width: `${Math.min(epPct, 100)}%` }}
-                        />
-                        {/* AniSkip intro/outro markers */}
-                        {dur > 0 && skipTimings?.intro && (
+                          className="progress-bar-outer"
+                          style={{ position: "relative" }}
+                        >
                           <div
-                            title="Intro"
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              left: `${(skipTimings.intro.startTime / dur) * 100}%`,
-                              width: `${((skipTimings.intro.endTime - skipTimings.intro.startTime) / dur) * 100}%`,
-                              height: "100%",
-                              background: "rgba(251,191,36,0.75)",
-                              borderRadius: 2,
-                              pointerEvents: "none",
-                            }}
+                            className="progress-bar-fill"
+                            style={{ width: `${Math.min(epPct, 100)}%` }}
                           />
-                        )}
-                        {dur > 0 && skipTimings?.outro && (
-                          <div
-                            title="Outro"
-                            style={{
-                              position: "absolute",
-                              top: 0,
-                              left: `${(skipTimings.outro.startTime / dur) * 100}%`,
-                              width: `${((skipTimings.outro.endTime - skipTimings.outro.startTime) / dur) * 100}%`,
-                              height: "100%",
-                              background: "rgba(251,191,36,0.75)",
-                              borderRadius: 2,
-                              pointerEvents: "none",
-                            }}
-                          />
-                        )}
+                          {dur > 0 && skipTimings?.intro && (
+                            <div
+                              title="Intro"
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: `${(skipTimings.intro.startTime / dur) * 100}%`,
+                                width: `${((skipTimings.intro.endTime - skipTimings.intro.startTime) / dur) * 100}%`,
+                                height: "100%",
+                                background: "rgba(251,191,36,0.75)",
+                                borderRadius: 2,
+                                pointerEvents: "none",
+                              }}
+                            />
+                          )}
+                          {dur > 0 && skipTimings?.outro && (
+                            <div
+                              title="Outro"
+                              style={{
+                                position: "absolute",
+                                top: 0,
+                                left: `${(skipTimings.outro.startTime / dur) * 100}%`,
+                                width: `${((skipTimings.outro.endTime - skipTimings.outro.startTime) / dur) * 100}%`,
+                                height: "100%",
+                                background: "rgba(251,191,36,0.75)",
+                                borderRadius: 2,
+                                pointerEvents: "none",
+                              }}
+                            />
+                          )}
+                        </div>
+                        <span style={{ fontSize: 12, color: "var(--text3)" }}>
+                          {epPct > 0 ? `${epPct.toFixed(0)}% watched` : ""}
+                        </span>
                       </div>
-                      <span style={{ fontSize: 12, color: "var(--text3)" }}>
-                        {epPct > 0 ? `${epPct.toFixed(0)}% watched` : ""}
-                      </span>
-                    </div>
-                  ) : null;
-                })()}
-              {currentProgressKey && (
-                <div className="progress-mark-row">
-                  <span
-                    style={{
-                      fontSize: 12,
-                      color: "var(--text3)",
-                      marginRight: 4,
-                    }}
+                    ) : null;
+                  })()}
+                {currentProgressKey && (
+                  <div className="progress-mark-row">
+                    <span style={{ fontSize: 12, color: "var(--text3)", marginRight: 4 }}>
+                      Mark:
+                    </span>
+                    {[25, 50, 75, 100].map((p) => (
+                      <button
+                        key={p}
+                        className="btn btn-ghost"
+                        style={{ padding: "4px 10px", fontSize: 12 }}
+                        onClick={() => saveProgress(currentProgressKey, p)}
+                      >
+                        {p}%
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {currentEpWatched ? (
+                  <button
+                    className="btn btn-ghost watched-btn"
+                    onClick={() => onMarkUnwatched?.(currentProgressKey)}
                   >
-                    Mark progress:
-                  </span>
-                  {[25, 50, 75, 100].map((p) => (
-                    <button
-                      key={p}
-                      className="btn btn-ghost"
-                      style={{ padding: "5px 14px", fontSize: 12 }}
-                      onClick={() => saveProgress(currentProgressKey, p)}
-                    >
-                      {p}%
-                    </button>
-                  ))}
-                </div>
-              )}
+                    <WatchedIcon size={14} /> Watched
+                  </button>
+                ) : (
+                  <button
+                    className="btn btn-ghost"
+                    onClick={() => onMarkWatched?.(currentProgressKey)}
+                  >
+                    ✓ Mark Watched
+                  </button>
+                )}
+              </div>
             </div>
           )}
 
@@ -2426,6 +2440,14 @@ export default function TVPage({
           </div>
         </>
       )}
+
+      <DetailExtras
+        mediaType="tv"
+        id={item.id}
+        apiKey={apiKey}
+        onSelect={onSelect}
+        onSelectPerson={onSelectPerson}
+      />
 
       {showTrailer && trailerKey && (
         <TrailerModal

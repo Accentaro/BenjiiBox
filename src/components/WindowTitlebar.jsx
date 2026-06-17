@@ -66,7 +66,7 @@ export default function WindowTitlebar() {
           textOverflow: "ellipsis",
         }}
       >
-        STREAMBERT
+        BENJIIBOX
       </div>
 
       {/* Window control buttons, NOT draggable */}

@@ -47,23 +47,24 @@
 }
 
 :root {
-    --bg: #0a0a0a;
-    --surface: #111111;
-    --surface2: #1a1a1a;
-    --surface3: #222222;
-    --border: #2a2a2a;
-    --red: #e50914;
-    --red2: #ff1a24;
-    --red-dim: rgba(229, 9, 20, 0.15);
-    --red-glow: 0 0 30px rgba(229, 9, 20, 0.3);
+    --bg: #0f0f11;
+    --surface: #17171a;
+    --surface2: #1e1e22;
+    --surface3: #262629;
+    --border: #333338;
+    --red: #b07028;
+    --red2: #d09040;
+    --red-dim: rgb(176 112 40 / 15%);
+    --red-glow: 0 0 28px rgb(176 112 40 / 28%);
     --gold: #c8a84b;
-    --text: #f0f0f0;
-    --text2: #c0c0c0;
-    --text3: #909090;
+    --text: #ede9e3;
+    --text2: #a09890;
+    --text3: #66605a;
     --sidebar: 72px;
     --radius: 8px;
     --font-display: "Bebas Neue", sans-serif;
     --font-body: "DM Sans", sans-serif;
+    --rivet: rgb(72 64 54 / 75%);
 }
 
 html,
@@ -125,18 +126,18 @@ body,
     width: 100%;
     height: 100%;
     display: block;
-    filter: drop-shadow(0 0 8px rgba(229, 9, 20, 0.5));
+    filter: drop-shadow(0 0 8px color-mix(in srgb, var(--red) 55%, transparent));
     transition: filter 0.2s;
 }
 
 .sidebar-logo:hover img {
-    filter: drop-shadow(0 0 16px rgba(229, 9, 20, 0.8));
+    filter: drop-shadow(0 0 16px color-mix(in srgb, var(--red) 85%, transparent));
 }
 
 .sidebar-sep {
     width: 32px;
     height: 1px;
-    background: var(--border);
+    background: linear-gradient(to right, var(--border), color-mix(in srgb, var(--red) 30%, var(--border)));
     margin: 6px 0;
     flex-shrink: 0;
 }
@@ -443,20 +444,21 @@ body,
 
 .section-title {
     font-family: var(--font-display);
-    font-size: 28px;
-    letter-spacing: 1px;
-    color: var(--text);
+    font-size: 26px;
+    letter-spacing: 4px;
+    color: var(--text2);
     margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 12px;
+    text-transform: uppercase;
 }
 
 .section-title::after {
     content: "";
     flex: 1;
-    height: 1px;
-    background: var(--border);
+    height: 2px;
+    background: linear-gradient(to right, var(--red) 0%, var(--border) 28%);
 }
 
 /* ── Cards ──────────────────────────────────────────────────────────────── */
@@ -504,7 +506,7 @@ body.no-anim *::after {
 .card:hover {
     transform: translateY(-4px) scale(1.02);
     border-color: var(--red);
-    box-shadow: var(--red-glow);
+    box-shadow: var(--red-glow), 0 0 0 1px color-mix(in srgb, var(--red) 25%, transparent);
 }
 
 .card-poster {
@@ -626,6 +628,7 @@ body.no-anim *::after {
     gap: 14px;
     overflow-x: auto;
     padding-bottom: 8px;
+    mask-image: linear-gradient(to right, black 0%, black 88%, transparent 100%);
 }
 
 .scroll-row .card {
@@ -888,16 +891,22 @@ body.no-anim *::after {
 .detail-gradient {
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        to top,
-        var(--bg) 0%,
-        var(--bg) 5%,
-        color-mix(in srgb, var(--bg) 85%, transparent) 20%,
-        color-mix(in srgb, var(--bg) 60%, transparent) 35%,
-        color-mix(in srgb, var(--bg) 35%, transparent) 50%,
-        color-mix(in srgb, var(--bg) 10%, transparent) 65%,
-        transparent 80%
-    );
+    background:
+        linear-gradient(
+            to top,
+            var(--bg) 0%,
+            var(--bg) 5%,
+            color-mix(in srgb, var(--bg) 85%, transparent) 20%,
+            color-mix(in srgb, var(--bg) 60%, transparent) 35%,
+            color-mix(in srgb, var(--bg) 35%, transparent) 50%,
+            color-mix(in srgb, var(--bg) 10%, transparent) 65%,
+            transparent 80%
+        ),
+        linear-gradient(
+            to right,
+            color-mix(in srgb, var(--bg) 88%, transparent) 0%,
+            transparent 55%
+        );
 }
 
 .detail-content {
@@ -1029,10 +1038,119 @@ body.no-anim *::after {
     display: none !important;
 }
 
+/* ── Fullscreen player page overlay ─────────────────────────────────────────── */
+
+.player-page-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+}
+
+.player-page-infobar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(to bottom, rgb(0 0 0 / 80%) 0%, transparent 100%);
+    transition: opacity 0.3s ease;
+    pointer-events: auto;
+}
+
+.player-page-infobar--hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.player-page-close {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    background: rgb(255 255 255 / 15%);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+}
+
+.player-page-close:hover {
+    background: rgb(255 255 255 / 30%);
+}
+
+.player-page-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-shadow: 0 1px 4px rgb(0 0 0 / 60%);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-page-year {
+    font-size: 13px;
+    font-weight: 400;
+    color: rgb(255 255 255 / 70%);
+}
+
+.player-page-bottombar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 16px 16px;
+    background: linear-gradient(to top, rgb(0 0 0 / 80%) 0%, transparent 100%);
+    transition: opacity 0.3s ease;
+    pointer-events: auto;
+}
+
+.player-page-bottombar--hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Hide window titlebar when player page overlay is active */
+.player-page-overlay ~ * .window-titlebar,
+body:has(.player-page-overlay) .window-titlebar {
+    display: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+
 .player-wrap::before {
     content: "";
     display: block;
     padding-top: 56.25%;
+}
+
+.player-page-overlay .player-wrap {
+    flex: 1;
+    min-height: 0;
+    border-radius: 0 !important;
+    border: none !important;
+}
+
+.player-page-overlay .player-wrap::before {
+    display: none;
 }
 
 .player-wrap iframe {
@@ -1109,8 +1227,11 @@ body.no-anim *::after {
 
 .season-btn.active {
     background: var(--red);
-    border-color: var(--red);
+    border-color: var(--red2);
     color: white;
+    font-weight: 700;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 12px color-mix(in srgb, var(--red) 45%, transparent);
 }
 
 .episodes-grid {
@@ -1124,11 +1245,12 @@ body.no-anim *::after {
     gap: 12px;
     padding: 12px;
     border-radius: var(--radius);
-    background: var(--surface2);
+    background: linear-gradient(135deg, var(--surface2) 0%, var(--surface) 100%);
     border: 1px solid var(--border);
     cursor: pointer;
     transition: all 0.2s;
     align-items: flex-start;
+    position: relative;
 }
 
 .episode-card:hover {
@@ -1379,7 +1501,8 @@ body.no-anim *::after {
 .library-title {
     font-family: var(--font-display);
     font-size: 48px;
-    letter-spacing: 1px;
+    letter-spacing: 4px;
+    color: var(--text2);
     margin-bottom: 8px;
 }
 
@@ -3869,4 +3992,285 @@ html[data-win-titlebar][data-maximized] .main {
 
 .episode-check-item:hover {
     color: var(--text) !important;
+}
+
+/* ── Home: "See more" row toggle ────────────────────────────────────────── */
+.see-more-btn {
+    margin-left: auto;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text3);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition:
+        color 0.15s,
+        border-color 0.15s,
+        background 0.15s;
+}
+
+.see-more-btn:hover {
+    color: var(--text);
+    border-color: var(--red);
+    background: var(--red-dim);
+}
+
+/* ── Cast row (detail pages) ────────────────────────────────────────────── */
+.cast-row {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+}
+
+.cast-card {
+    flex-shrink: 0;
+    width: 92px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.cast-avatar {
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    margin-bottom: 8px;
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+.cast-card:hover .cast-avatar {
+    border-color: var(--red);
+    box-shadow: var(--red-glow);
+}
+
+.cast-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.cast-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.cast-char {
+    font-size: 11px;
+    color: var(--text3);
+    line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Browse page controls ───────────────────────────────────────────────── */
+.browse-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 48px 4px;
+}
+
+.browse-control-group {
+    display: flex;
+    gap: 4px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px;
+}
+
+.browse-chip {
+    background: none;
+    border: none;
+    color: var(--text3);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 5px 16px;
+    border-radius: 16px;
+    cursor: pointer;
+    transition:
+        background 0.15s,
+        color 0.15s;
+}
+
+.browse-chip--active {
+    background: var(--red);
+    color: #fff;
+}
+
+.browse-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    outline: none;
+}
+
+.browse-select:focus {
+    border-color: var(--red);
+}
+
+/* ── Person page ────────────────────────────────────────────────────────── */
+.person-header {
+    display: flex;
+    gap: 32px;
+    padding: 48px 48px 8px;
+    align-items: flex-start;
+}
+
+.person-avatar {
+    width: 180px;
+    height: 180px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--surface3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text3);
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--bg) 55%, transparent);
+}
+
+.person-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.person-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.person-bio {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.7;
+    margin: 16px 0 20px;
+    max-width: 720px;
+    display: -webkit-box;
+    -webkit-line-clamp: 6;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* ── Scroll-row "load more" arrow ────────────────────────────────────────── */
+.scroll-row-more {
+    flex-shrink: 0;
+    width: 44px;
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface2);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    cursor: pointer;
+    color: var(--text3);
+    transition: all 0.2s;
+    font-family: var(--font-body);
+}
+
+.scroll-row-more:hover {
+    color: var(--red);
+    border-color: var(--red);
+    background: var(--red-dim);
+}
+
+.scroll-row-more:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+/* ── Browse page load-more ───────────────────────────────────────────────── */
+.browse-load-more {
+    display: flex;
+    justify-content: center;
+    padding: 24px 48px 48px;
+}
+
+.browse-load-more-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text2);
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 32px;
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.browse-load-more-btn:hover {
+    color: var(--text);
+    border-color: var(--red);
+    background: var(--red-dim);
+}
+
+.browse-load-more-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* ── Industrial Comic Enhancements ──────────────────────────────────────────── */
+
+/* Corner rivets on episode cards */
+.episode-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: inherit;
+    background-image:
+        radial-gradient(circle at 5px 5px, var(--rivet) 1.8px, transparent 1.8px),
+        radial-gradient(circle at calc(100% - 5px) 5px, var(--rivet) 1.8px, transparent 1.8px),
+        radial-gradient(circle at 5px calc(100% - 5px), var(--rivet) 1.8px, transparent 1.8px),
+        radial-gradient(circle at calc(100% - 5px) calc(100% - 5px), var(--rivet) 1.8px, transparent 1.8px);
+    background-repeat: no-repeat;
+    z-index: 1;
+}
+
+/* Sidebar: narrow copper accent strip on active button */
+.sidebar-btn.active::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 25%;
+    bottom: 25%;
+    width: 3px;
+    background: var(--red);
+    border-radius: 0 2px 2px 0;
 }

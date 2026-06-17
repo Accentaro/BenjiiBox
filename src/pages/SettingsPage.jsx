@@ -14,6 +14,7 @@ import {
   THEME_PRESETS,
   applyTheme,
   DEFAULT_CUSTOM_VARS,
+  CUSTOM_ACCENT_KEY,
 } from "../utils/appearance";
 import { SUBTITLE_LANGUAGES } from "../utils/subtitles";
 import { DEFAULT_INVIDIOUS_BASE } from "../components/TrailerModal";
@@ -1199,7 +1200,10 @@ function BackupRestoreSection({ onRestored }) {
 // ── Appearance Section ────────────────────────────────────────────────────────
 function AppearanceSection() {
   const [accent, setAccent] = useState(
-    () => storage.get(STORAGE_KEYS.ACCENT_COLOR) || "red",
+    () => storage.get(STORAGE_KEYS.ACCENT_COLOR) || "copper",
+  );
+  const [customAccentHex, setCustomAccentHex] = useState(
+    () => storage.get(CUSTOM_ACCENT_KEY) || "#6f9a8d",
   );
   const [fontSize, setFontSize] = useState(
     () => storage.get(STORAGE_KEYS.FONT_SIZE) || "normal",
@@ -1225,7 +1229,7 @@ function AppearanceSection() {
 
   // Remember the committed (saved) values to revert on unmount if unsaved
   const committedRef = useRef({
-    accent: storage.get(STORAGE_KEYS.ACCENT_COLOR) || "red",
+    accent: storage.get(STORAGE_KEYS.ACCENT_COLOR) || "copper",
     theme: storage.get(STORAGE_KEYS.THEME) || "dark",
     customVars: storage.get(STORAGE_KEYS.CUSTOM_THEME_VARS) || {
       ...DEFAULT_CUSTOM_VARS,
@@ -1262,6 +1266,7 @@ function AppearanceSection() {
 
   const handleSave = () => {
     storage.set(STORAGE_KEYS.ACCENT_COLOR, accent);
+    if (accent === "custom") storage.set(CUSTOM_ACCENT_KEY, customAccentHex);
     storage.set(STORAGE_KEYS.ACCENT_IN_PLAYER, accentInPlayer);
     storage.set(STORAGE_KEYS.FONT_SIZE, fontSize);
     storage.set(STORAGE_KEYS.COMPACT_MODE, compact ? 1 : 0);
@@ -1271,7 +1276,7 @@ function AppearanceSection() {
       storage.set(STORAGE_KEYS.CUSTOM_THEME_VARS, customVars);
     }
     // Apply immediately
-    applyAccentColor(accent);
+    applyAccentColor(accent, accent === "custom" ? customAccentHex : null);
     applyTheme(theme, theme === "custom" ? customVars : null);
     const zoomMap = { sm: 0.85, normal: 1, lg: 1.15 };
     if (window.electron?.setZoomFactor)
@@ -1476,8 +1481,8 @@ function AppearanceSection() {
         >
           Accent Colour
         </div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          {ACCENT_PRESETS.map((p) => (
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+          {ACCENT_PRESETS.filter((p) => p.id !== "custom").map((p) => (
             <button
               key={p.id}
               onClick={() => {
@@ -1503,10 +1508,58 @@ function AppearanceSection() {
               }}
             />
           ))}
+          {/* Custom colour swatch + picker */}
+          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+            <button
+              onClick={() => {
+                setAccent("custom");
+                applyAccentColor("custom", customAccentHex);
+              }}
+              title="Custom"
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: "50%",
+                background: customAccentHex,
+                border:
+                  accent === "custom"
+                    ? `3px solid var(--text)`
+                    : "3px solid transparent",
+                outline: accent === "custom" ? `2px solid ${customAccentHex}` : "none",
+                outlineOffset: 2,
+                cursor: "pointer",
+                transition: "transform 0.15s",
+                transform: accent === "custom" ? "scale(1.15)" : "scale(1)",
+                flexShrink: 0,
+                position: "relative",
+                overflow: "hidden",
+              }}
+            />
+            <input
+              type="color"
+              value={customAccentHex}
+              onChange={(e) => {
+                setCustomAccentHex(e.target.value);
+                setAccent("custom");
+                applyAccentColor("custom", e.target.value);
+              }}
+              title="Pick custom colour"
+              style={{
+                width: 28,
+                height: 28,
+                borderRadius: 6,
+                border: "1px solid var(--border)",
+                background: "var(--surface2)",
+                cursor: "pointer",
+                padding: 2,
+              }}
+            />
+          </div>
         </div>
         <div style={{ fontSize: 12, color: "var(--text3)", marginTop: 8 }}>
-          {ACCENT_PRESETS.find((p) => p.id === accent)?.label}, applied to
-          buttons, highlights, and indicators.
+          {accent === "custom"
+            ? `Custom (${customAccentHex}), applied to buttons, highlights, and indicators.`
+            : `${ACCENT_PRESETS.find((p) => p.id === accent)?.label}, applied to buttons, highlights, and indicators.`}
         </div>
         {/* Accent in streaming player */}
         <div

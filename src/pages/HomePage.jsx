@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import MediaCard from "../components/MediaCard";
 import TrendingCarousel from "../components/TrendingCarousel";
-import { PlayIcon, StarIcon } from "../components/Icons";
+import { PlayIcon, StarIcon, ChevronRightIcon } from "../components/Icons";
 import { imgUrl, tmdbFetch } from "../utils/api";
 import { useRatings, getRatingForItem } from "../utils/useRatings";
 import { isRestricted } from "../utils/ageRating";
@@ -152,7 +152,7 @@ export default function HomePage({
           return true;
         });
 
-        setRecommendedItems(deduped.slice(0, 20));
+        setRecommendedItems(deduped.slice(0, 30));
       })
       .catch((e) => {
         if (e.name !== "AbortError")
@@ -175,10 +175,10 @@ export default function HomePage({
     ])
       .then(([moviesData, tvData]) => {
         const movies = (moviesData.results || [])
-          .slice(0, 8)
+          .slice(0, 12)
           .map((i) => ({ ...i, media_type: "movie" }));
         const tv = (tvData.results || [])
-          .slice(0, 8)
+          .slice(0, 12)
           .map((i) => ({ ...i, media_type: "tv" }));
         // Interleave movies and TV for variety
         const merged = [];
@@ -196,14 +196,81 @@ export default function HomePage({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [apiKey, offline]);
 
-  // Stable pre-built item arrays for carousels, capped at 10
+  // Stable pre-built item arrays for carousels/rows
   const trendingMovieItems = useMemo(
-    () => trending.slice(0, 10).map((i) => ({ ...i, media_type: "movie" })),
+    () => trending.slice(0, 20).map((i) => ({ ...i, media_type: "movie" })),
     [trending],
   );
   const trendingTVItems = useMemo(
-    () => trendingTV.slice(0, 10).map((i) => ({ ...i, media_type: "tv" })),
+    () => trendingTV.slice(0, 20).map((i) => ({ ...i, media_type: "tv" })),
     [trendingTV],
+  );
+
+  // Per-row "See more" expansion state (row id -> expanded?)
+  const [expandedRows, setExpandedRows] = useState({});
+  const toggleRow = useCallback(
+    (id) => setExpandedRows((prev) => ({ ...prev, [id]: !prev[id] })),
+    [],
+  );
+
+  // Extra items loaded per-row (page 2+), keyed by row id
+  const [rowExtras, setRowExtras] = useState({});
+  const [rowPages, setRowPages] = useState({});
+  const [rowLoading, setRowLoading] = useState({});
+
+  const loadMoreForRow = useCallback(
+    async (rowId) => {
+      if (!apiKey || rowLoading[rowId]) return;
+      const nextPage = (rowPages[rowId] || 1) + 1;
+      setRowLoading((prev) => ({ ...prev, [rowId]: true }));
+      try {
+        let newItems = [];
+        if (rowId === "trendingMovies") {
+          const d = await tmdbFetch(
+            `/trending/movie/week?page=${nextPage}`,
+            apiKey,
+          );
+          newItems = (d.results || []).map((i) => ({
+            ...i,
+            media_type: "movie",
+          }));
+        } else if (rowId === "trendingTV") {
+          const d = await tmdbFetch(
+            `/trending/tv/week?page=${nextPage}`,
+            apiKey,
+          );
+          newItems = (d.results || []).map((i) => ({ ...i, media_type: "tv" }));
+        } else if (rowId === "topRated") {
+          const [m, t] = await Promise.all([
+            tmdbFetch(`/movie/top_rated?page=${nextPage}`, apiKey),
+            tmdbFetch(`/tv/top_rated?page=${nextPage}`, apiKey),
+          ]);
+          const movies = (m.results || [])
+            .slice(0, 12)
+            .map((i) => ({ ...i, media_type: "movie" }));
+          const tv = (t.results || [])
+            .slice(0, 12)
+            .map((i) => ({ ...i, media_type: "tv" }));
+          const max = Math.max(movies.length, tv.length);
+          for (let i = 0; i < max; i++) {
+            if (movies[i]) newItems.push(movies[i]);
+            if (tv[i]) newItems.push(tv[i]);
+          }
+        }
+        if (newItems.length > 0) {
+          setRowExtras((prev) => ({
+            ...prev,
+            [rowId]: [...(prev[rowId] || []), ...newItems],
+          }));
+          setRowPages((prev) => ({ ...prev, [rowId]: nextPage }));
+        }
+      } catch {
+        // silent
+      } finally {
+        setRowLoading((prev) => ({ ...prev, [rowId]: false }));
+      }
+    },
+    [apiKey, rowLoading, rowPages],
   );
 
   return (
@@ -319,9 +386,13 @@ export default function HomePage({
           );
         }
 
-        // Render a section as a flat cards-grid (list view)
-        const renderList = (key, title, titleHighlight, items) => {
-          if (!items || items.length === 0) return null;
+        // Render a section as a dense, horizontally-scrolling row.
+        // A compact "See more" toggle expands it to a full wrapping grid.
+        const renderList = (key, title, titleHighlight, baseItems) => {
+          const allItems = [...(baseItems || []), ...(rowExtras[key] || [])];
+          if (allItems.length === 0) return null;
+          const isExpanded = !!expandedRows[key];
+          const canLoadMore = key !== "recommended";
           return (
             <div key={key} className="section">
               <div className="section-title">
@@ -335,9 +406,17 @@ export default function HomePage({
                 ) : (
                   title
                 )}
+                {allItems.length > 6 && (
+                  <button
+                    className="see-more-btn"
+                    onClick={() => toggleRow(key)}
+                  >
+                    {isExpanded ? "Show less" : "See more"}
+                  </button>
+                )}
               </div>
-              <div className="cards-grid">
-                {items.map((item) => {
+              <div className={isExpanded ? "cards-grid" : "scroll-row"}>
+                {allItems.map((item) => {
                   const type = item.media_type === "tv" ? "tv" : "movie";
                   const rk = `${type}_${item.id}`;
                   const rd = enrichedRatingsMap[rk] || {};
@@ -355,6 +434,23 @@ export default function HomePage({
                     />
                   );
                 })}
+                {!isExpanded && canLoadMore && (
+                  <button
+                    className="scroll-row-more"
+                    onClick={() => loadMoreForRow(key)}
+                    disabled={rowLoading[key]}
+                    title="Load more"
+                  >
+                    {rowLoading[key] ? (
+                      <div
+                        className="spinner"
+                        style={{ width: 18, height: 18, borderWidth: 2 }}
+                      />
+                    ) : (
+                      <ChevronRightIcon size={20} />
+                    )}
+                  </button>
+                )}
               </div>
             </div>
           );

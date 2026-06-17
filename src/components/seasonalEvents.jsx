@@ -15,13 +15,6 @@ import { useEffect, useState } from "react";
 // ── Event definitions ────────────────────────────────────────────────────────
 
 const EVENTS = [
-  // ── Pride Month (June) ───────────────────────────────────────────────────
-  {
-    id: "pride",
-    check: (d) => d.getMonth() === 5, // June = 5
-    render: () => <PrideOverlay />,
-  },
-
   // ── Christmas (Dec 20 – Dec 31) ──────────────────────────────────────────
   {
     id: "christmas",

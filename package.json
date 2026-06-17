@@ -1,7 +1,7 @@
 {
   "name": "streambert",
-  "version": "2.5.0",
-  "description": "Streambert Desktop App",
+  "version": "0.0.1",
+  "description": "BenjiiBox Desktop App",
   "author": {
     "name": "truelockmc",
     "email": "anonyson@proton.me"
@@ -35,7 +35,7 @@
   },
   "build": {
     "appId": "com.truelockmc.streambert",
-    "productName": "Streambert",
+    "productName": "BenjiiBox",
     "asar": true,
     "compression": "normal",
     "directories": {
@@ -90,7 +90,7 @@
       "createStartMenuShortcut": true,
       "selectPerMachineByDefault": false,
       "license": "LICENSE",
-      "uninstallDisplayName": "Uninstall Streambert",
+      "uninstallDisplayName": "Uninstall BenjiiBox",
       "installerSidebar": "public/installer-sidebar.bmp"
     },
     "win": {
@@ -156,8 +156,8 @@
       "icon": "public/sized",
       "desktop": {
         "entry": {
-          "Name": "Streambert",
-          "Comment": "Streambert Desktop App",
+          "Name": "BenjiiBox",
+          "Comment": "BenjiiBox Desktop App",
           "Categories": "AudioVideo;Video;Player;Multimedia;Internet;",
           "Icon": "streambert",
           "StartupWMClass": "Streambert"

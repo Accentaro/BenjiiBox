@@ -15,6 +15,7 @@ import {
   applyAccentColor,
   applyTheme,
   ACCENT_PRESETS,
+  CUSTOM_ACCENT_KEY,
 } from "./utils/appearance";
 import { collectBackupData } from "./utils/backup";
 import { tmdbFetch, setApiErrorHandlers } from "./utils/api";
@@ -33,6 +34,8 @@ const TVPage = lazy(() => import("./pages/TVPage"));
 const LibraryPage = lazy(() => import("./pages/LibraryPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const DownloadsPage = lazy(() => import("./pages/DownloadsPage"));
+const BrowsePage = lazy(() => import("./pages/BrowsePage"));
+const PersonPage = lazy(() => import("./pages/PersonPage"));
 import { checkForUpdates } from "./utils/updates";
 
 export default function App() {
@@ -78,11 +81,14 @@ export default function App() {
   // Computed once here and passed as a prop to MoviePage / TVPage so neither
   // page needs to touch storage.  Refreshed via "streambert:player-settings-changed".
   const readPlayerSettings = () => {
-    const accentId = storage.get(STORAGE_KEYS.ACCENT_COLOR) || "red";
+    const accentId = storage.get(STORAGE_KEYS.ACCENT_COLOR) || "copper";
     const inPlayer = storage.get(STORAGE_KEYS.ACCENT_IN_PLAYER) !== false; // default true
-    const accentHex = inPlayer
-      ? (ACCENT_PRESETS.find((p) => p.id === accentId)?.color ?? null)
-      : null;
+    const customHex = storage.get(CUSTOM_ACCENT_KEY) || null;
+    const resolvedHex =
+      accentId === "custom"
+        ? customHex
+        : (ACCENT_PRESETS.find((p) => p.id === accentId)?.color ?? null);
+    const accentHex = inPlayer ? resolvedHex : null;
     const subtitleLang = storage.get(STORAGE_KEYS.SUBTITLE_LANG) || null;
     return { accentColor: accentHex, subtitleLang };
   };
@@ -553,8 +559,9 @@ export default function App() {
   }, []);
   useEffect(() => {
     // Accent colour
-    const accent = storage.get(STORAGE_KEYS.ACCENT_COLOR) || "red";
-    applyAccentColor(accent);
+    const accent = storage.get(STORAGE_KEYS.ACCENT_COLOR) || "copper";
+    const customHex = storage.get(CUSTOM_ACCENT_KEY) || null;
+    applyAccentColor(accent, customHex);
     // Theme
     const theme = storage.get(STORAGE_KEYS.THEME) || "dark";
     const customVars = storage.get(STORAGE_KEYS.CUSTOM_THEME_VARS) || null;
@@ -990,6 +997,7 @@ export default function App() {
                 downloads={downloads}
                 onGoToDownloads={handleGoToDownloads}
                 onSelect={handleSelectResult}
+                onSelectPerson={(p) => navigate("person", p)}
               />
             )}
             {page === "tv" && selected && (
@@ -1012,6 +1020,19 @@ export default function App() {
                 onMarkUnwatched={markUnwatched}
                 downloads={downloads}
                 onGoToDownloads={handleGoToDownloads}
+                onSelect={handleSelectResult}
+                onSelectPerson={(p) => navigate("person", p)}
+              />
+            )}
+            {page === "browse" && (
+              <BrowsePage apiKey={apiKey} onSelect={handleSelectResult} />
+            )}
+            {page === "person" && selected && (
+              <PersonPage
+                person={selected}
+                apiKey={apiKey}
+                onSelect={handleSelectResult}
+                onBack={navigateBack}
               />
             )}
             {page === "history" && (
@@ -1091,7 +1112,7 @@ export default function App() {
               color: "#fff",
             }}
           >
-            <span>🎉 Streambert v{updateBanner.latest} is available!</span>
+            <span>🎉 BenjiiBox v{updateBanner.latest} is available!</span>
             <button
               onClick={() => setShowUpdateModal(true)}
               style={{
